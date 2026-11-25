@@ -1,0 +1,23 @@
+[package]
+name = "svn2git-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "svn2git-cli"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+svn2git-core = { path = "../svn2git-core" }
+tokio.workspace = true
+url = "2"
+
+[dev-dependencies]
+tempfile.workspace = true

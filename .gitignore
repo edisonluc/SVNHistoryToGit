@@ -1,0 +1,51 @@
+# Rust, Go and MyGo build outputs
+/target/
+/dist/
+/desktop/dist/
+/desktop/.mygo/
+/desktop/mygo_windows_*.syso
+/desktop/desktop
+/desktop/desktop.exe
+/desktop/desktop.test
+/desktop/desktop.test.exe
+
+# Local design notes and prototypes
+/docs/
+
+# SVN2Git state, work directories, task logs and dump files
+.data/
+*.sqlite3
+*.sqlite3-*
+wizard-draft.json
+draft-*.tmp
+migration-????????-????-????-????-????????????/
+*.ndjson
+*.ndjson.zst
+*.svndump.zst
+/*.svndump
+/*.dump
+
+# Local task inputs and exports kept beside the source checkout
+/task.toml
+/task.json
+/svn2git-task.toml
+/svn2git-task.json
+/authors.txt
+/authors.csv
+/svn2git-report-task-[0-9]*.*
+.env
+.env.*
+!.env.example
+!.env.sample
+/.ssh/
+id_rsa
+id_ed25519
+id_ecdsa
+*.ppk
+
+# Local IDE and operating system files
+/.vs/
+/.idea/workspace.xml
+Thumbs.db
+Desktop.ini
+.DS_Store
