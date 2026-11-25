@@ -27,15 +27,24 @@ func defaultClient() (cli, error) {
 	if err != nil {
 		return cli{}, err
 	}
-	dir := os.Getenv("SVN2GIT_DATA_DIR")
+	dir := os.Getenv("SVN_HISTORY_TO_GIT_DATA_DIR")
+	if dir == "" {
+		dir = os.Getenv("SVN2GIT_DATA_DIR")
+	}
 	if dir == "" {
 		if appData := os.Getenv("APPDATA"); appData != "" {
-			dir = filepath.Join(appData, "SVN2Git")
+			dir = filepath.Join(appData, product.Name)
+			if _, err := os.Stat(dir); errors.Is(err, os.ErrNotExist) {
+				legacy := filepath.Join(appData, "SVN2Git")
+				if info, err := os.Stat(legacy); err == nil && info.IsDir() {
+					dir = legacy
+				}
+			}
 		} else {
 			dir = filepath.Join(filepath.Dir(exe), ".data")
 		}
 	}
-	return cli{filepath.Join(filepath.Dir(exe), "svn2git-cli.exe"), dir}, nil
+	return cli{filepath.Join(filepath.Dir(exe), "svn-history-to-git-cli.exe"), dir}, nil
 }
 func readEvents(reader io.Reader, onProgress progressFunc) (json.RawMessage, error) {
 	dec := json.NewDecoder(reader)

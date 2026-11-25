@@ -1666,15 +1666,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 
 [[package]]
-name = "svn2git-cli"
-version = "0.1.0"
+name = "svn-history-to-git-cli"
+version = "0.2.0"
 dependencies = [
  "anyhow",
  "chrono",
  "clap",
  "serde",
  "serde_json",
- "svn2git-core",
+ "svn-history-to-git-core",
  "tempfile",
  "tokio",
  "url",
@@ -1682,8 +1682,8 @@ dependencies = [
 ]
 
 [[package]]
-name = "svn2git-core"
-version = "0.1.0"
+name = "svn-history-to-git-core"
+version = "0.2.0"
 dependencies = [
  "async-trait",
  "bytes",

@@ -98,6 +98,7 @@ func (a *app) view(c *ui.Context) {
 		a.statusBar(c)
 	})
 	a.diagnosisView(c)
+	a.aboutView(c)
 	if ui.AlertDialog(c, &a.closePrompt, "迁移仍在运行", "关闭窗口后将失去实时进度。再次打开应用可在任务历史中查看状态并恢复。", "关闭窗口", "继续查看") == 0 {
 		a.closing = true
 		a.win.Close()

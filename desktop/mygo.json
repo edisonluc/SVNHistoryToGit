@@ -1,6 +1,8 @@
 {
-  "name": "SVN2Git",
-  "identifier": "dev.svn2git.desktop",
-  "version": "0.1.0",
+  "name": "SVNHistoryToGit",
+  "identifier": "io.github.edisonluc.svnhistorytogit",
+  "version": "0.2.0",
+  "publisher": "edisonluc",
+  "license": "MIT",
   "icon": "assets/icon.png"
 }

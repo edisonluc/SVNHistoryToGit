@@ -1,6 +1,6 @@
 [CmdletBinding()]
 param(
-    [string]$OutputDirectory = (Join-Path $PSScriptRoot 'dist/SVN2Git'),
+    [string]$OutputDirectory = (Join-Path $PSScriptRoot 'dist/SVNHistoryToGit'),
     [string]$Go = 'go'
 )
 
@@ -28,8 +28,12 @@ Push-Location $PSScriptRoot
 try {
     $metadataJson = cargo metadata --locked --no-deps --format-version 1
     if ($LASTEXITCODE -ne 0) { throw '无法读取 Rust 工作区' }
-    $targetDir = ($metadataJson | ConvertFrom-Json).target_directory
-    cargo build --locked --release -p svn2git-cli
+    $metadata = $metadataJson | ConvertFrom-Json
+    $targetDir = $metadata.target_directory
+    $cliPackage = $metadata.packages | Where-Object name -eq 'svn-history-to-git-cli'
+    $manifest = Get-Content -Raw -Encoding UTF8 -LiteralPath 'desktop/mygo.json' | ConvertFrom-Json
+    if ($manifest.version -cne $cliPackage.version) { throw 'desktop/mygo.json 和 Cargo.toml 的版本号必须一致' }
+    cargo build --locked --release -p svn-history-to-git-cli
     if ($LASTEXITCODE -ne 0) { throw 'Rust 核心构建失败' }
 
     $goBin = (Get-Command $Go -CommandType Application).Source
@@ -42,13 +46,13 @@ try {
     $release = Join-Path $targetDir 'release'
     & $goBin -C desktop run "github.com/egoist/mygo/cmd/mygo@$mygoVersion" build -platform "windows/$goArch" -skip-installer -o $release
     if ($LASTEXITCODE -ne 0) { throw 'MyGo 桌面端构建失败' }
-    $nativeExe = Join-Path $release 'SVN2Git.exe'
-    Copy-ReleaseBinary (Join-Path $release "windows-$goArch/SVN2Git.exe") $nativeExe
+    $nativeExe = Join-Path $release 'SVNHistoryToGit.exe'
+    Copy-ReleaseBinary (Join-Path $release "windows-$goArch/SVNHistoryToGit.exe") $nativeExe
     [void][System.IO.Directory]::CreateDirectory($destination)
-    Copy-ReleaseBinary $nativeExe (Join-Path $destination 'SVN2Git.exe')
-    Copy-ReleaseBinary (Join-Path $release 'svn2git-cli.exe') (Join-Path $destination 'svn2git-cli.exe')
-    $archive = Join-Path (Split-Path -Parent $destination) "SVN2Git-windows-$goArch.zip"
-    $binaries = @((Join-Path $destination 'SVN2Git.exe'), (Join-Path $destination 'svn2git-cli.exe'))
+    Copy-ReleaseBinary $nativeExe (Join-Path $destination 'SVNHistoryToGit.exe')
+    Copy-ReleaseBinary (Join-Path $release 'svn-history-to-git-cli.exe') (Join-Path $destination 'svn-history-to-git-cli.exe')
+    $archive = Join-Path (Split-Path -Parent $destination) "SVNHistoryToGit-v$($manifest.version)-windows-$goArch.zip"
+    $binaries = @((Join-Path $destination 'SVNHistoryToGit.exe'), (Join-Path $destination 'svn-history-to-git-cli.exe'))
     $packageFiles = $binaries + (Join-Path $PSScriptRoot 'LICENSE')
     Compress-Archive -LiteralPath $packageFiles -DestinationPath $archive -Force
     Get-Item -LiteralPath ($binaries + $archive)

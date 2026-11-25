@@ -138,7 +138,7 @@ func (a *app) diagnosisView(c *ui.Context) {
 							})
 						}
 						if issues > 0 || a.doctorMore {
-							hint(c, "补装后点「重新检测」。如果安装时修改了 PATH，请从开始菜单或文件资源管理器重新打开 SVN2Git。")
+							hint(c, "补装后点「重新检测」。如果安装时修改了 PATH，请从开始菜单或文件资源管理器重新打开 SVNHistoryToGit。")
 						}
 					}
 				})

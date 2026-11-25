@@ -1,12 +1,14 @@
 [workspace]
 resolver = "2"
 members = [
-    "crates/svn2git-core",
-    "crates/svn2git-cli",
+    "crates/svn-history-to-git-core",
+    "crates/svn-history-to-git-cli",
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.2.0"
+authors = ["edisonluc"]
+repository = "https://github.com/edisonluc/SVNHistoryToGit"
 edition = "2021"
 license = "MIT"
 

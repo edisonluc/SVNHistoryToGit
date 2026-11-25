@@ -1,0 +1,25 @@
+[package]
+name = "svn-history-to-git-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[[bin]]
+name = "svn-history-to-git-cli"
+path = "src/main.rs"
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+serde_json.workspace = true
+serde.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+svn-history-to-git-core = { path = "../svn-history-to-git-core" }
+tokio.workspace = true
+url = "2"
+
+[dev-dependencies]
+tempfile.workspace = true

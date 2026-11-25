@@ -12,7 +12,7 @@
 # Local design notes and prototypes
 /docs/
 
-# SVN2Git state, work directories, task logs and dump files
+# SVNHistoryToGit state, work directories, task logs and dump files
 .data/
 *.sqlite3
 *.sqlite3-*
@@ -28,6 +28,9 @@ migration-????????-????-????-????-????????????/
 # Local task inputs and exports kept beside the source checkout
 /task.toml
 /task.json
+/svn-history-to-git-task.toml
+/svn-history-to-git-task.json
+/svn-history-to-git-report-task-[0-9]*.*
 /svn2git-task.toml
 /svn2git-task.json
 /authors.txt

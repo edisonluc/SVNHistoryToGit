@@ -1,13 +1,15 @@
-# SVN2Git
+# [SVNHistoryToGit](https://github.com/edisonluc/SVNHistoryToGit)
 
 [简体中文](README.md) · English
 
-SVN2Git is a Windows desktop tool for moving an SVN project's files and commit history into a new branch of an existing Git repository. The native MyGo wizard shows the destination for each SVN path. The Rust engine converts the history, verifies the files and checks each reference on the remote after pushing. The interface is in Chinese. The steps below include the labels you will see on screen.
+SVNHistoryToGit is a Windows desktop tool for moving an SVN project's files and commit history into a new branch of an existing Git repository. The native MyGo wizard shows the destination for each SVN path. The Rust engine converts the history, verifies the files and checks each reference on the remote after pushing. The interface is in Chinese. The steps below include the labels you will see on screen.
+
+The current version is **v0.2.0**, by **edisonluc**. Open **帮助 → 关于 SVNHistoryToGit** (Help → About) for the installed version and the author's repository. Choose **帮助 → 检查更新** (Help → Check for updates) to check the latest stable GitHub release. When a newer version is available, open its release page for notes and downloads.
 
 ## Quick start
 
 1. Install the Git and Subversion command-line tools on Windows. In PowerShell, check that `git --version` and `svn --version --quiet` both print a version number. If you use TortoiseSVN, enable **Command line client tools** in its installer.
-2. Download `SVN2Git-windows-amd64.zip` for Windows x64 from [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases/latest) and extract it. Keep `SVN2Git.exe` and `svn2git-cli.exe` in the same folder and double-click `SVN2Git.exe`. To build your own package, follow [Build from source](#build-from-source).
+2. Select the Windows x64 archive for your release, for example `SVNHistoryToGit-v0.2.0-windows-amd64.zip`, on [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases) and extract it. Keep `SVNHistoryToGit.exe` and `svn-history-to-git-cli.exe` in the same folder and double-click `SVNHistoryToGit.exe`. To build your own package, follow [Build from source](#build-from-source).
 3. Have the URL of an SVN project you can read and the clone URL of a Git repository you can push to. The Git repository can be empty or already have branches such as `main`. Choose an unused branch name, for example `svn-import`. The wizard creates it when it pushes.
 
 ## Walk through a migration
@@ -46,7 +48,9 @@ The example uses a local Git repository, so you can verify it using the clone co
 
 - **作者库 (Author library)** shares Git identities across projects by SVN username. Select **导入 authors.txt** to import mappings, one per line, such as `alice = Alice Chen <alice@example.org>`. To override an identity for one migration, use **查看本次作者 → 仅修改本次 → 应用到本次** on the review page.
 - **凭据库 (Credential library)** stores SVN accounts, Git HTTP(S) tokens and paths to Git SSH keys. Windows Credential Manager stores the passwords and tokens. Expand **SVN 凭据** or **Git 凭据** in the wizard to choose a saved entry, or use your existing authentication environment.
-- **任务历史 (Task history)** lists previous runs. Select a record and choose **打开任务** to see the published commits, expand **阶段日志与任务详情** for logs or resume a failed run. The desktop app stores its data under `%APPDATA%\SVN2Git` by default. Set `SVN2GIT_DATA_DIR` before launching it to use another directory.
+- **任务历史 (Task history)** lists previous runs. Select a record and choose **打开任务** to see the published commits, expand **阶段日志与任务详情** for logs or resume a failed run. The desktop app stores its data under `%APPDATA%\SVNHistoryToGit` by default. Set `SVN_HISTORY_TO_GIT_DATA_DIR` before launching it to use another directory.
+
+On upgrades from v0.1.0, the app reuses an existing `%APPDATA%\SVN2Git` when the new default directory does not exist. The old `SVN2GIT_DATA_DIR` setting also works. The new variable takes precedence.
 
 <details>
 <summary>View the author mapping and task history screens</summary>
@@ -65,7 +69,7 @@ Select an entry in task history to check its pinned revision, target branch and 
 
 | Symptom | What to do |
 | --- | --- |
-| Diagnostics reports a missing tool | Open **工具 → 工具诊断** (Tools → Diagnostics). A standard desktop migration needs `svn` and `git`. Git LFS also requires `git lfs` and an LFS-capable remote. Failed entries offer installation instructions and a command you can copy. Select **重新检测** (Run checks again) after installing. If the installer changed `PATH`, reopen SVN2Git from File Explorer. |
+| Diagnostics reports a missing tool | Open **工具 → 工具诊断** (Tools → Diagnostics). A standard desktop migration needs `svn` and `git`. Git LFS also requires `git lfs` and an LFS-capable remote. Failed entries offer installation instructions and a command you can copy. Select **重新检测** (Run checks again) after installing. If the installer changed `PATH`, reopen SVNHistoryToGit from File Explorer. |
 | The selected project has no `trunk` | Check that you selected the intended project or branch. For a custom layout, expand **自定义目录布局** and set **主线路径** to a path relative to the selected project. Leave this field empty to use the selected directory itself. |
 | A destination branch or tag already exists | If the mainline target name is in use, enter a new branch name on the Git target page. For an optional branch or tag, edit its destination name on the review page or clear its checkbox. |
 | The push failed, or verification of the remote was interrupted | Open the original task in **任务历史** and inspect its logs. After restoring network access or write permission, select **重试推送** (Retry push). If the app has pushed and is waiting to verify, select **重新核对远端** (Recheck remote). |
@@ -78,18 +82,18 @@ On Windows, install Go 1.27.3 or later, the stable Rust MSVC toolchain and Visua
 
 ```powershell
 .\build-desktop.ps1
-& .\dist\SVN2Git\SVN2Git.exe
+& .\dist\SVNHistoryToGit\SVNHistoryToGit.exe
 ```
 
-The script writes both executables to `dist/SVN2Git/` and creates `dist/SVN2Git-windows-<GOARCH>.zip`. To use a Go installation outside `PATH`, pass the full path to `go.exe` with the script's `-Go` option.
+The script writes both executables to `dist/SVNHistoryToGit/` and creates `dist/SVNHistoryToGit-v<version>-windows-<GOARCH>.zip`. To use a Go installation outside `PATH`, pass the full path to `go.exe` with the script's `-Go` option. For a release, set the same version in the root `Cargo.toml` and `desktop/mygo.json`, update `Cargo.lock`, and publish a stable GitHub release with the matching `vX.Y.Z` tag.
 
 ## Project layout and tests
 
 | Directory | Purpose |
 | --- | --- |
 | `desktop/` | Native Go / MyGo UI, migration wizard and desktop protocol client |
-| `crates/svn2git-core/` | SVN inspection, history conversion, verification, publishing and storage |
-| `crates/svn2git-cli/` | Desktop protocol server and standalone CLI for diagnostics, config-driven migration and report export |
+| `crates/svn-history-to-git-core/` | SVN inspection, history conversion, verification, publishing and storage |
+| `crates/svn-history-to-git-cli/` | Desktop protocol server and standalone CLI for diagnostics, config-driven migration and report export |
 
 The Rust integration tests create temporary local repositories. Put `git`, `svn`, `svnadmin`, `svnlook` and `svnmucc` on `PATH` and install Git LFS for the publishing test. Run these commands from the source root.
 
@@ -98,7 +102,7 @@ cargo test --locked --workspace
 go -C desktop test -buildvcs=false ./...
 ```
 
-The standalone CLI defaults to `.data` in the current directory. Pass the global `--data-dir` option to select a different location. Online fast import also needs `svnrdump`. Compatibility mode and incremental sync use `git svn`. Use `svnadmin` to create a dump of a local SVN repository. Run `cargo run --locked -p svn2git-cli -- --help` to list commands, or replace `--help` with `doctor` to check local tools.
+The standalone CLI defaults to `.data` in the current directory. Pass the global `--data-dir` option to select a different location. Online fast import also needs `svnrdump`. Compatibility mode and incremental sync use `git svn`. Use `svnadmin` to create a dump of a local SVN repository. Run `cargo run --locked -p svn-history-to-git-cli -- --help` to list commands, or replace `--help` with `doctor` to check local tools.
 
 ## License
 

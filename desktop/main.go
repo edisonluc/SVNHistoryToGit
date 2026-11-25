@@ -44,6 +44,7 @@ type toolStatus struct {
 	Purpose             string `json:"required_for"`
 }
 type app struct {
+	about aboutDialog
 	sidebarHidden bool
 	library                                                                   string
 	authorsPage                                                               authorLibrary
@@ -335,7 +336,7 @@ func main() {
 	}
 	mygo.App.WhenReady(func() {
 		a.win = mygo.NewWindow(mygo.WindowOptions{
-			Title: "SVN2Git · 仓库迁移", Width: 1100, Height: 810, MinWidth: 480, MinHeight: 440,
+			Title: product.Name + " v" + product.Version + " · 仓库迁移", Width: 1100, Height: 810, MinWidth: 480, MinHeight: 440,
 			TitleBarStyle: mygo.TitleBarHidden, TitleBarHeight: 32, Content: ui.View(a.view),
 		})
 		if err := a.win.SetIcon(appIconPNG); err != nil {

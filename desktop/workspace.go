@@ -102,8 +102,17 @@ func (a *app) workspaceMenu(c *ui.Context, small bool) {
 				a.diagnose()
 			}
 		})
+		menu("帮助", func(m *ui.Menu) {
+			if m.Item("关于 " + product.Name).Chosen() {
+				a.about.open = true
+			}
+			if m.Item("检查更新").Disabled(a.about.checking).Chosen() {
+				a.about.open = true
+				a.checkForUpdates()
+			}
+		})
 		ui.Spacer(c)
-		ui.Text(c, "SVN2Git").FontSize(12).TextColor(muted).SingleLine()
+		ui.Text(c, product.Name+" v"+product.Version).FontSize(12).TextColor(muted).SingleLine()
 	})
 }
 

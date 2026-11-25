@@ -1,13 +1,15 @@
-# SVN2Git
+# [SVNHistoryToGit](https://github.com/edisonluc/SVNHistoryToGit)
 
 简体中文 · [English](README.en.md)
 
-SVN2Git 是一款 Windows 桌面迁移工具。选中 SVN 项目后，可以把它的文件和提交历史迁到已有 Git 仓库的新分支。MyGo 原生向导列出每条 SVN 路径的去向，Rust 核心转换历史、校验文件，并在推送后逐项核对远端结果。
+SVNHistoryToGit 是一款 Windows 桌面迁移工具。选中 SVN 项目后，可以把它的文件和提交历史迁到已有 Git 仓库的新分支。MyGo 原生向导列出每条 SVN 路径的去向，Rust 核心转换历史、校验文件，并在推送后逐项核对远端结果。
+
+当前版本为 **v0.2.0**，作者为 **edisonluc**。打开 **帮助 → 关于 SVNHistoryToGit** 可查看版本和作者仓库。选择 **帮助 → 检查更新** 会查询 GitHub 上的最新正式版，发现新版时可打开发布页查看说明并下载。
 
 ## 快速上手
 
 1. 在 Windows 上准备 Git 和 Subversion 命令行工具。在 PowerShell 中运行 `git --version` 和 `svn --version --quiet`，确认都能显示版本号。使用 TortoiseSVN 时，可在安装程序中勾选 **Command line client tools**。
-2. 从 [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases/latest) 下载 `SVN2Git-windows-amd64.zip`（Windows x64）并解压。将 `SVN2Git.exe` 和 `svn2git-cli.exe` 放在同一目录，双击 `SVN2Git.exe`。也可以按[从源码构建](#从源码构建)自行打包。
+2. 在 [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases) 选择正式版的 Windows x64 压缩包，例如 `SVNHistoryToGit-v0.2.0-windows-amd64.zip`。解压后将 `SVNHistoryToGit.exe` 和 `svn-history-to-git-cli.exe` 放在同一目录，双击 `SVNHistoryToGit.exe`。也可以按[从源码构建](#从源码构建)自行打包。
 3. 准备好可读取的 SVN 项目地址和可推送的 Git 仓库克隆地址。目标仓库可以是空仓库，也可以已有 `main` 等分支。为迁入的历史取一个新分支名，例如 `svn-import`，推送时向导会创建它。
 
 ## 跟着向导完成一次迁移
@@ -46,7 +48,9 @@ SVN2Git 是一款 Windows 桌面迁移工具。选中 SVN 项目后，可以把�
 
 - **作者库**按 SVN 用户名在所有项目间共用映射。用 **导入 authors.txt** 可批量导入，每行形如 `alice = Alice Chen <alice@example.org>`。个别任务需要不同身份时，在确认页点 **查看本次作者 → 仅修改本次 → 应用到本次**。
 - **凭据库**可保存 SVN 账号、Git HTTP(S) 令牌和 Git SSH 私钥路径，密码和令牌存入 Windows 凭据管理器。可在向导的 **SVN 凭据** 或 **Git 凭据** 中选用已保存的条目，也可使用当前用户已有的认证环境。
-- **任务历史**中选择一条记录并点 **打开任务**，可以查看已交付的提交、展开 **阶段日志与任务详情** 或恢复失败的任务。桌面数据默认保存在 `%APPDATA%\SVN2Git`。在启动前设置 `SVN2GIT_DATA_DIR` 可更改位置。
+- **任务历史**中选择一条记录并点 **打开任务**，可以查看已交付的提交、展开 **阶段日志与任务详情** 或恢复失败的任务。桌面数据默认保存在 `%APPDATA%\SVNHistoryToGit`。在启动前设置 `SVN_HISTORY_TO_GIT_DATA_DIR` 可更改位置。
+
+从 v0.1.0 升级时，若新版默认目录尚不存在，程序会继续使用原有的 `%APPDATA%\SVN2Git`。旧环境变量 `SVN2GIT_DATA_DIR` 仍有效，新变量优先。
 
 <details>
 <summary>查看作者映射和任务历史的界面</summary>
@@ -78,18 +82,18 @@ Git 不记录空目录和一般 SVN 属性。`svn:externals` 引用的外部项�
 
 ```powershell
 .\build-desktop.ps1
-& .\dist\SVN2Git\SVN2Git.exe
+& .\dist\SVNHistoryToGit\SVNHistoryToGit.exe
 ```
 
-脚本会将两个可执行文件放进 `dist/SVN2Git/`，并生成 `dist/SVN2Git-windows-<GOARCH>.zip`。如果 Go 未加入 `PATH`，可用脚本参数 `-Go` 指定 `go.exe` 的完整路径。
+脚本会将两个可执行文件放进 `dist/SVNHistoryToGit/`，并生成 `dist/SVNHistoryToGit-v<版本>-windows-<GOARCH>.zip`。如果 Go 未加入 `PATH`，可用脚本参数 `-Go` 指定 `go.exe` 的完整路径。发布新版本时需同步修改根目录 `Cargo.toml` 与 `desktop/mygo.json` 的版本号，更新 `Cargo.lock`，并使用对应的 `vX.Y.Z` 标签创建 GitHub 正式版。
 
 ## 项目结构与测试
 
 | 目录 | 用途 |
 | --- | --- |
 | `desktop/` | Go / MyGo 原生界面、迁移向导和桌面协议客户端 |
-| `crates/svn2git-core/` | SVN 探测、历史转换、校验、推送和存储 |
-| `crates/svn2git-cli/` | 桌面协议服务和独立 CLI，支持诊断、配置文件迁移及报告导出 |
+| `crates/svn-history-to-git-core/` | SVN 探测、历史转换、校验、推送和存储 |
+| `crates/svn-history-to-git-cli/` | 桌面协议服务和独立 CLI，支持诊断、配置文件迁移及报告导出 |
 
 Rust 集成测试会创建本地临时仓库，需要从 `PATH` 调用 `git`、`svn`、`svnadmin`、`svnlook` 和 `svnmucc`。LFS 发布测试还会调用 `git lfs`。在项目根目录运行以下命令。
 
@@ -98,7 +102,7 @@ cargo test --locked --workspace
 go -C desktop test -buildvcs=false ./...
 ```
 
-独立 CLI 默认使用当前目录下的 `.data`，可用全局选项 `--data-dir` 更改。在线快速导入还需要 `svnrdump`，兼容模式和增量同步需要 `git svn`，手工制作本地 SVN 转储可用 `svnadmin`。用 `cargo run --locked -p svn2git-cli -- --help` 查看命令，或将 `--help` 换成 `doctor` 查看工具诊断。
+独立 CLI 默认使用当前目录下的 `.data`，可用全局选项 `--data-dir` 更改。在线快速导入还需要 `svnrdump`，兼容模式和增量同步需要 `git svn`，手工制作本地 SVN 转储可用 `svnadmin`。用 `cargo run --locked -p svn-history-to-git-cli -- --help` 查看命令，或将 `--help` 换成 `doctor` 查看工具诊断。
 
 ## 许可证
 
