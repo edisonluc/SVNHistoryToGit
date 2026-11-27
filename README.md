@@ -4,12 +4,12 @@
 
 SVNHistoryToGit 是一款 Windows 桌面迁移工具。选中 SVN 项目后，可以把它的文件和提交历史迁到已有 Git 仓库的新分支。MyGo 原生向导列出每条 SVN 路径的去向，Rust 核心转换历史、校验文件，并在推送后逐项核对远端结果。
 
-当前版本为 **v0.2.0**，作者为 **edisonluc**。打开 **帮助 → 关于 SVNHistoryToGit** 可查看版本和作者仓库。选择 **帮助 → 检查更新** 会查询 GitHub 上的最新正式版，发现新版时可打开发布页查看说明并下载。
+当前版本为 **v0.2.1**，作者为 **edisonluc**。打开 **帮助 → 关于 SVNHistoryToGit** 可查看版本和作者仓库。选择 **帮助 → 检查更新** 会查询 GitHub 上的最新正式版，发现新版时可打开发布页查看说明并下载。
 
 ## 快速上手
 
 1. 在 Windows 上准备 Git 和 Subversion 命令行工具。在 PowerShell 中运行 `git --version` 和 `svn --version --quiet`，确认都能显示版本号。使用 TortoiseSVN 时，可在安装程序中勾选 **Command line client tools**。
-2. 在 [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases) 选择正式版的 Windows x64 压缩包，例如 `SVNHistoryToGit-v0.2.0-windows-amd64.zip`。解压后将 `SVNHistoryToGit.exe` 和 `svn-history-to-git-cli.exe` 放在同一目录，双击 `SVNHistoryToGit.exe`。也可以按[从源码构建](#从源码构建)自行打包。
+2. 在 [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases) 选择正式版的 Windows x64 压缩包，例如 `SVNHistoryToGit-v0.2.1-windows-amd64.zip`。解压后将 `SVNHistoryToGit.exe` 和 `svn-history-to-git-cli.exe` 放在同一目录，双击 `SVNHistoryToGit.exe`。也可以按[从源码构建](#从源码构建)自行打包。
 3. 准备好可读取的 SVN 项目地址和可推送的 Git 仓库克隆地址。目标仓库可以是空仓库，也可以已有 `main` 等分支。为迁入的历史取一个新分支名，例如 `svn-import`，推送时向导会创建它。
 
 ## 跟着向导完成一次迁移
@@ -18,7 +18,7 @@ SVNHistoryToGit 是一款 Windows 桌面迁移工具。选中 SVN 项目后，�
 
 ### 1. 选择 SVN 项目
 
-在 **仓库或项目地址** 粘贴 SVN 地址，点 **连接**。在目录树中选中项目根目录，看一眼树下方显示的主线路径，再点 **下一步 · Git 目标**。标准项目默认使用 `trunk`。要迁移某个 SVN 分支或分支中的子项目，也可以直接选中它的目录。
+在 **仓库或项目地址** 粘贴 SVN 地址，点 **连接**。在目录树中选中项目根目录，看一眼树下方显示的主线路径，再点 **下一步 · Git 目标**。标准项目默认使用 `trunk`。要单独迁移 `trunk` 下的子项目、某个 SVN 分支或分支中的子项目，也可以直接选中它的目录。
 
 ![选择 SVN 项目。连接后在目录树中定位要迁移的项目](assets/screenshots/01-svn-project.png)
 

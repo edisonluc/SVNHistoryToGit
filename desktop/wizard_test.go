@@ -151,7 +151,7 @@ func TestBranchSubprojectLayoutRespectsTrunkAndSavedChoices(t *testing.T) {
 	if err != nil || !old.autoBranchSubdir() {
 		t.Fatal("uninspected draft must detect the layout", err)
 	}
-	for _, suffix := range []string{"", "/branches", "/branches/V0.X", "/branches/V0.X/SampleApp/tags", "/branches/V0.X/SampleApp/branches", "/branches-other/V0.X/SampleApp"} {
+	for _, suffix := range []string{"", "/branches", "/branches/V0.X", "/branches/V0.X/SampleApp/tags", "/branches/V0.X/SampleApp/branches", "/branches-other/V0.X/SampleApp", "/trunk", "/trunk/SampleApp/tags", "/trunk/SampleApp/branches", "/trunk-other/SampleApp"} {
 		a.chooseProject(root + suffix)
 		if a.d.autoBranchSubdir() {
 			t.Errorf("unexpected detection for %s", a.d.Project)
@@ -172,6 +172,60 @@ func TestBranchSubprojectLayoutRespectsTrunkAndSavedChoices(t *testing.T) {
 	}
 	if _, ok := parentTrunk(root + "/branches/V0.X/trunk"); ok {
 		t.Fatal("pasting a trunk directly inside a branch also selected its siblings")
+	}
+}
+
+func TestSelectProjectInsideTrunk(t *testing.T) {
+	a := testApp(t)
+	root := "https://svn.example.org/svn/%E8%BD%AF%E4%BB%B6%E7%A0%94%E5%8F%91%E9%83%A8/YZS/VehicleCheck"
+	trunkDir := root + "/trunk"
+	subproject := trunkDir + "/VehicleCheckDataPark"
+	a.d.Address = "https://svn.example.org/svn/软件研发部/YZS/VehicleCheck"
+	a.chooseProject(root)
+	a.tree = &directory{URL: root, Name: a.d.Address, Loaded: true, Open: true, Children: []*directory{
+		{URL: root + "/branches", Name: "branches", Loaded: true},
+		{URL: root + "/tags", Name: "tags", Loaded: true},
+		{URL: trunkDir, Name: "trunk", Loaded: true, Open: true, Children: []*directory{
+			{URL: trunkDir + "/VehicleCheck", Name: "VehicleCheck", Loaded: true},
+			{URL: subproject, Name: "VehicleCheckDataPark", Loaded: true},
+		}},
+	}}
+	tt := ui.NewTester(a.view, 1080, 900)
+	if err := tt.Click("VehicleCheckDataPark"); err != nil {
+		t.Fatal(err)
+	}
+	if a.d.Project != subproject || !a.d.autoBranchSubdir() || !tt.HasText("迁移主线 · 将检查 trunk，若不存在则使用当前目录") {
+		t.Fatal(a.d.Project, a.d.autoBranchSubdir(), tt.Texts())
+	}
+	file := a.draftPath()
+	if err := saveDraft(file, a.d); err != nil {
+		t.Fatal(err)
+	}
+	restored, err := readDraft(file)
+	if err != nil || !restored.autoBranchSubdir() {
+		t.Fatal("uninspected trunk subproject draft must detect the layout", err)
+	}
+	a.d.apply(inspection{URL: subproject, UUID: "vehicle", Revision: 9})
+	if a.d.Trunk != "" || a.d.Branches != "" || a.d.Tags != "" {
+		t.Fatal("refresh would look for trunk again")
+	}
+	a.d.Step = 2
+	tt.Frame()
+	if !tt.HasText("主线  trunk/VehicleCheckDataPark") || !tt.HasText("→  refs/heads/main") {
+		t.Fatal(tt.Texts())
+	}
+	want := []scopeRef{{"", "trunk", "main"}}
+	if m := a.d.manifest(); m.URL != subproject || !reflect.DeepEqual(m.Refs, want) {
+		t.Fatal(m)
+	}
+	if got := nestedBranchPath(root + "/branches/trunk/VehicleCheckDataPark"); got != "branches/trunk/VehicleCheckDataPark" {
+		t.Fatalf("unexpected branch-named-trunk path: %q", got)
+	}
+	if parent, ok := parentTrunk(subproject + "/trunk"); !ok || parent != subproject {
+		t.Fatal(parent, ok)
+	}
+	if _, ok := parentTrunk(trunkDir + "/trunk"); ok {
+		t.Fatal("pasting trunk/trunk must not select the enclosing trunk")
 	}
 }
 

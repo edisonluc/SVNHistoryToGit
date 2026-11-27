@@ -266,23 +266,33 @@ func mainlineDirectory(addr string) string {
 	return ""
 }
 
-// A project below a branch may have its own trunk, or store its code directly.
+// A project below trunk or a branch may have its own trunk, or store its code directly.
 func nestedBranchPath(addr string) string {
 	u, err := url.Parse(addr)
 	if err != nil {
 		return ""
 	}
-	p := strings.TrimRight(u.Path, "/")
-	const marker = "/branches/"
-	at := strings.LastIndex(p, marker)
-	if at < 0 || !strings.Contains(p[at+len(marker):], "/") {
+	trimmed := strings.Trim(u.Path, "/")
+	if trimmed == "" {
 		return ""
 	}
-	switch path.Base(p) {
+	segs := strings.Split(trimmed, "/")
+	switch segs[len(segs)-1] {
 	case "branches", "tags", "trunk":
 		return ""
 	}
-	return p[at+1:]
+	for i := len(segs) - 2; i >= 0; i-- {
+		if segs[i] == "branches" {
+			if i+2 < len(segs) {
+				return strings.Join(segs[i:], "/")
+			}
+			return ""
+		}
+		if segs[i] == "trunk" && (i == 0 || segs[i-1] != "branches") {
+			return strings.Join(segs[i:], "/")
+		}
+	}
+	return ""
 }
 
 func (d *draft) autoBranchSubdir() bool {

@@ -4,12 +4,12 @@
 
 SVNHistoryToGit is a Windows desktop tool for moving an SVN project's files and commit history into a new branch of an existing Git repository. The native MyGo wizard shows the destination for each SVN path. The Rust engine converts the history, verifies the files and checks each reference on the remote after pushing. The interface is in Chinese. The steps below include the labels you will see on screen.
 
-The current version is **v0.2.0**, by **edisonluc**. Open **帮助 → 关于 SVNHistoryToGit** (Help → About) for the installed version and the author's repository. Choose **帮助 → 检查更新** (Help → Check for updates) to check the latest stable GitHub release. When a newer version is available, open its release page for notes and downloads.
+The current version is **v0.2.1**, by **edisonluc**. Open **帮助 → 关于 SVNHistoryToGit** (Help → About) for the installed version and the author's repository. Choose **帮助 → 检查更新** (Help → Check for updates) to check the latest stable GitHub release. When a newer version is available, open its release page for notes and downloads.
 
 ## Quick start
 
 1. Install the Git and Subversion command-line tools on Windows. In PowerShell, check that `git --version` and `svn --version --quiet` both print a version number. If you use TortoiseSVN, enable **Command line client tools** in its installer.
-2. Select the Windows x64 archive for your release, for example `SVNHistoryToGit-v0.2.0-windows-amd64.zip`, on [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases) and extract it. Keep `SVNHistoryToGit.exe` and `svn-history-to-git-cli.exe` in the same folder and double-click `SVNHistoryToGit.exe`. To build your own package, follow [Build from source](#build-from-source).
+2. Select the Windows x64 archive for your release, for example `SVNHistoryToGit-v0.2.1-windows-amd64.zip`, on [GitHub Releases](https://github.com/edisonluc/SVNHistoryToGit/releases) and extract it. Keep `SVNHistoryToGit.exe` and `svn-history-to-git-cli.exe` in the same folder and double-click `SVNHistoryToGit.exe`. To build your own package, follow [Build from source](#build-from-source).
 3. Have the URL of an SVN project you can read and the clone URL of a Git repository you can push to. The Git repository can be empty or already have branches such as `main`. Choose an unused branch name, for example `svn-import`. The wizard creates it when it pushes.
 
 ## Walk through a migration
@@ -18,7 +18,7 @@ The screenshots follow a local example that imports `FieldNotes/trunk` and its h
 
 ### 1. Select the SVN project
 
-Paste the SVN URL into **仓库或项目地址** (repository or project URL) and select **连接** (Connect). Choose the project root in the directory tree, check the mainline path below the tree, then select **下一步 · Git 目标** (Next · Git target). The wizard uses `trunk` for a standard layout. To migrate a single SVN branch or a project nested inside it, select that directory directly.
+Paste the SVN URL into **仓库或项目地址** (repository or project URL) and select **连接** (Connect). Choose the project root in the directory tree, check the mainline path below the tree, then select **下一步 · Git 目标** (Next · Git target). The wizard uses `trunk` for a standard layout. To migrate a subproject under `trunk`, a single SVN branch, or a project nested inside a branch, select that directory directly.
 
 ![SVN project selection with the connected repository and its directory tree](assets/screenshots/01-svn-project.png)
 

@@ -214,7 +214,7 @@ func (a *app) sourceView(c *ui.Context) {
 	}
 	sectionTitle(c, glyphFolder, "SVN 仓库")
 	panel(c).Children(func() {
-		hint(c, "默认迁移项目的 trunk。也可以选择或粘贴一个分支，或只迁移该分支中的一个子项目。")
+		hint(c, "默认迁移项目的 trunk。也可以选择或粘贴 trunk、分支，或只迁移其中的一个子项目。")
 		old := a.d.Address
 		if a.addressField(c, "仓库或项目地址", &a.d.Address, "https://svn.example.org/repos/team", svnAddress).Changed() {
 			if !sameHost(old, a.d.Address) {

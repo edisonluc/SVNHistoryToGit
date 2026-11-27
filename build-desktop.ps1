@@ -1,10 +1,13 @@
-[CmdletBinding()]
+﻿[CmdletBinding()]
 param(
-    [string]$OutputDirectory = (Join-Path $PSScriptRoot 'dist/SVNHistoryToGit'),
+    [string]$OutputDirectory = '',
     [string]$Go = 'go'
 )
 
 $ErrorActionPreference = 'Stop'
+if ([string]::IsNullOrWhiteSpace($OutputDirectory)) {
+    $OutputDirectory = Join-Path $PSScriptRoot 'dist/SVNHistoryToGit'
+}
 $destination = [System.IO.Path]::GetFullPath($OutputDirectory)
 $previousPath = $env:PATH
 $previousGoFlags = $env:GOFLAGS
@@ -48,6 +51,23 @@ try {
     if ($LASTEXITCODE -ne 0) { throw 'MyGo 桌面端构建失败' }
     $nativeExe = Join-Path $release 'SVNHistoryToGit.exe'
     Copy-ReleaseBinary (Join-Path $release "windows-$goArch/SVNHistoryToGit.exe") $nativeExe
+
+    $distParent = Split-Path -Parent $destination
+    $legacyPaths = @(
+        (Join-Path $release 'SVN2Git.exe'),
+        (Join-Path $release "windows-$goArch/SVN2Git.exe"),
+        (Join-Path $release 'svn2git-cli.exe'),
+        (Join-Path $release 'svn2git-cli.d'),
+        (Join-Path $release 'svn2git_cli.pdb'),
+        (Join-Path $distParent 'SVN2Git')
+    )
+    foreach ($legacy in $legacyPaths) {
+        if (Test-Path -LiteralPath $legacy) {
+            Remove-Item -LiteralPath $legacy -Recurse -Force
+        }
+    }
+    Get-ChildItem -Path $distParent -Filter 'SVN2Git*.zip' -File -ErrorAction SilentlyContinue | Remove-Item -Force
+
     [void][System.IO.Directory]::CreateDirectory($destination)
     Copy-ReleaseBinary $nativeExe (Join-Path $destination 'SVNHistoryToGit.exe')
     Copy-ReleaseBinary (Join-Path $release 'svn-history-to-git-cli.exe') (Join-Path $destination 'svn-history-to-git-cli.exe')

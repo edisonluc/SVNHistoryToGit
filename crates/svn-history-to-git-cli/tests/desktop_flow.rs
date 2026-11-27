@@ -138,7 +138,16 @@ fn inspect_nested_branch_project_uses_its_actual_layout() {
         &base,
         "dev",
         "standard layout",
-        &["mkdir", &format!("{project}/trunk")],
+        &[
+            "mkdir",
+            &format!("{project}/trunk"),
+            "mkdir",
+            "trunk",
+            "mkdir",
+            "trunk/VehicleCheckDataPark",
+            "mkdir",
+            "trunk/VehicleCheckDataPark/src",
+        ],
     );
     let structured = request(root, auto);
     assert_eq!(structured["url"], url);
@@ -146,6 +155,23 @@ fn inspect_nested_branch_project_uses_its_actual_layout() {
     assert_eq!(structured["trunk"], "trunk");
     assert_eq!(structured["branches"], json!(["branches/internal"]));
     assert_eq!(structured["tags"], json!(["tags/internal"]));
+
+    let trunk_sub_url = format!("{base}/trunk/VehicleCheckDataPark");
+    let trunk_sub = request(
+        root,
+        json!({
+            "op":"inspect",
+            "url":trunk_sub_url,
+            "trunk":"trunk",
+            "branches":"branches",
+            "tags":"tags",
+            "auto_branch_subdir":true
+        }),
+    );
+    assert_eq!(trunk_sub["url"], trunk_sub_url);
+    assert_eq!(trunk_sub["trunk"], "");
+    assert_eq!(trunk_sub["branches"], json!([]));
+    assert_eq!(trunk_sub["tags"], json!([]));
 }
 
 #[test]
